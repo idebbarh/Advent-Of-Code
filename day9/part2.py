@@ -23,17 +23,19 @@ def closestPoint(point, point_set):
 def arePointsAdjacent(point1, point2):
     return manhattanDistance(point1, point2) <= math.sqrt(2)
 
-def moveMeBabby(d,one,two,oneIsOriginHead):
+def moveMeBabby(d,one,two):
     global knotsPos
-    if oneIsOriginHead: 
-        newVal = [*knotsPos[one]]
-        newVal[directions[d][0]] +=directions[d][1]
-        knotsPos[one]=newVal
+
+    if one == 0: 
+        knotsPos[one][directions[d][0]]+=directions[d][1]
+
     if not arePointsAdjacent(knotsPos[one],knotsPos[two]) :
         clone = knotsPos[two].copy()
         setOfPoints = set()
+
         for y,x in [(0,1),(1,0),(0,-1),(-1,0),(1,1),(-1,-1),(-1,1),(1,-1)] :
             setOfPoints.add(tuple([clone[0]+y,clone[1]+x]))
+
         knotsPos[two] = list(closestPoint(knotsPos[one],setOfPoints))    
 
 
@@ -42,10 +44,13 @@ def moveMeBabby(d,one,two,oneIsOriginHead):
 def main() :
     for move in moves :
         if move == "": continue
+
         d,s = move.split(" ")
+
         for _ in range(int(s)) :
             for i in range(len(knotsPos)-1) :
-                moveMeBabby(d,i,i+1,i==0)
+
+                moveMeBabby(d,i,i+1)
                 places.add((knotsPos[-1][0],knotsPos[-1][1]))
 
     print(len(places))
