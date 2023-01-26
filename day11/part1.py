@@ -32,7 +32,7 @@ while curRound < 20:
             else :
                 item+=n
 
-            item//=3 
+            item//=3
 
             testNum = monkey["test"]
             monkeyOne,monkeyTwo = monkey["throw"]
@@ -45,6 +45,7 @@ while curRound < 20:
         monkeys[key]["items"] = []
 
     curRound+=1
+    print(curRound)
 
 times = []
 
