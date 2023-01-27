@@ -2,33 +2,6 @@ import math
 
 grid = open("input.txt").read().split("\n")
 grid = [[c for c in row] for row in grid if row != ""]
-letter = {
-    "a": "b",
-    "b": "c",
-    "c": "d",
-    "d": "e",
-    "e": "f",
-    "f": "g",
-    "g": "h",
-    "h": "i",
-    "i": "j",
-    "j": "k",
-    "k": "l",
-    "l": "m",
-    "m": "n",
-    "n": "o",
-    "o": "p",
-    "p": "q",
-    "q": "r",
-    "r": "s",
-    "s": "t",
-    "t": "u",
-    "u": "v",
-    "v": "w",
-    "w": "x",
-    "x": "y",
-    "y": "z",
-}
 
 class Node:
     def __init__(self, value, gCost, hCost, fCost, parent,x,y):
@@ -58,7 +31,7 @@ class Node:
         neighbors = self.getNeighbors()
         validNeighbors = []
         for neighbor in neighbors:
-            if self.value >= neighbor.value or letter[self.value] == neighbor.value:
+            if self.value >= neighbor.value or getNextLetter(self.value) == neighbor.value:
                 validNeighbors.append(neighbor)
 
         return validNeighbors
@@ -99,6 +72,9 @@ def getLowestCostNode(openList):
             lowestCostNode = node
     return lowestCostNode
 
+
+def getNextLetter(letter):
+    return chr(ord(letter) + 1)
 
 def aStar():
     global endPoint
