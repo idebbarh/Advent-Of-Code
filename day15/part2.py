@@ -56,7 +56,7 @@ def manhattanDis(p1,p2) :
 def isCanBeHere(p) :
     for sensor in sensorsPos :
         sensorCurrentPos = sensor 
-        closestBeacon = min(beaconsPos,key=lambda p: manhattanDis(p,sensorCurrentPos))
+        closestBeacon = min(beaconsPos,key=lambda p2: manhattanDis(p2,sensorCurrentPos))
 
         if manhattanDis(p,sensorCurrentPos) <= manhattanDis(closestBeacon,sensorCurrentPos) :
             return False
