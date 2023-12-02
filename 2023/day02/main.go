@@ -9,7 +9,7 @@ func main() {
 	args := os.Args
 
 	if len(args) < 2 {
-		fmt.Println("Error: input file not found")
+		fmt.Println("Error: input not fout")
 		os.Exit(1)
 	}
 
@@ -17,7 +17,7 @@ func main() {
 
 	content, err := os.ReadFile(file)
 	if err != nil {
-		fmt.Printf("Error: could not open %s: %v", file, err)
+		fmt.Printf("Error: could not read %s: %v", file, err)
 		os.Exit(1)
 	}
 
