@@ -1,6 +1,6 @@
 package main
 
-func helper(cards_score map[int]int, cur_cards_score map[int]int) int {
+func helper(cards_score map[int]int, cur_cards_score map[int]int, memo map[int]int) int {
 	if len(cur_cards_score) == 0 {
 		return 0
 	}
@@ -16,12 +16,21 @@ func helper(cards_score map[int]int, cur_cards_score map[int]int) int {
 			next_cards[j] = cards_score[j]
 		}
 
-		output += helper(cards_score, next_cards)
+		if cached, ok := memo[card_id]; ok {
+			output += cached
+		} else {
+			res := helper(cards_score, next_cards, memo)
+			output += res
+			memo[card_id] = res
+		}
+
 	}
+
 	return output
 }
 
 func part2(input string) int {
+	memo := map[int]int{}
 	cards := get_cards(input)
 	cards_score := map[int]int{}
 
@@ -37,5 +46,5 @@ func part2(input string) int {
 		cards_score[i+1] = card_score
 	}
 
-	return helper(cards_score, cards_score) + len(cards)
+	return helper(cards_score, cards_score, memo) + len(cards)
 }
