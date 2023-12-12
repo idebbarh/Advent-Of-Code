@@ -1,0 +1,68 @@
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+type Next struct {
+	left  string
+	right string
+}
+
+type Graph = map[string]Next
+
+// func traverse(graph Graph, cur string, instructions []string, index int) int {
+// 	if _, ok := graph[cur]; !ok {
+// 		return 0
+// 	}
+//
+//
+// }
+
+func part1(input string) int {
+	output := 0
+	parts := strings.Split(input, "\n\n")
+	instructions := strings.Split(parts[0], "")
+	graph := Graph{}
+	var start string
+	for i, line := range strings.Split(parts[1], "\n") {
+		if len(line) == 0 {
+			continue
+		}
+
+		line_parts := strings.Split(line, " = ")
+		nexts := strings.Split(line_parts[1], ", ")
+		left := strings.Replace(nexts[0], "(", "", -1)
+		right := strings.Replace(nexts[1], ")", "", -1)
+		cur := line_parts[0]
+		graph[cur] = Next{left: left, right: right}
+
+		if i == 0 {
+			start = cur
+		}
+	}
+	cur := start
+	cur_inst := 0
+
+	fmt.Println(cur, cur_inst)
+	// for {
+	// 	if cur == "ZZZ" {
+	// 		break
+	// 	}
+	// 	if cur_inst >= len(instructions) {
+	// 		cur_inst = 0
+	// 	}
+	// 	switch instructions[cur_inst] {
+	// 	case "L":
+	// 		cur = graph[cur].left
+	// 	case "R":
+	// 		cur = graph[cur].right
+	// 	}
+	//
+	// 	output += 1
+	// 	cur_inst += 1
+	// }
+
+	return output
+}
