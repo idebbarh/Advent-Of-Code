@@ -9,6 +9,7 @@ func part2(input string) *big.Int {
 	ends := []int64{}
 
 	var iter int64
+
 	for _, cur := range starts {
 		cur_inst := 0
 		iter = 0
