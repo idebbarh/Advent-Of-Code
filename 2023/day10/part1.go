@@ -31,32 +31,34 @@ const (
 	SOUTH_EAST  Pipe = "F"
 )
 
-func graph_traverse(cur_node Node, vis map[Node]bool, graph Graph, total, minSteps int) int {
+func graph_traverse(cur_node Node, vis map[Node]bool, graph Graph, total int, steps []int) []int {
 	if cur_node.pipe == "S" {
-		if minSteps > 0 {
-			return min(total, minSteps)
-		}
-
-		return total
-	}
-
-	if _, ok := vis[cur_node]; ok {
-		return minSteps
+		return steps
 	}
 
 	if _, ok := graph[cur_node]; !ok {
-		return minSteps
+		return []int{}
 	}
 
 	vis[cur_node] = true
 
 	neibrs := graph[cur_node]
 
+	res := []int{}
+
 	for _, nei := range neibrs {
-		minSteps = graph_traverse(nei, vis, graph, total+1, minSteps)
+		if _, ok := vis[nei]; ok {
+			continue
+		}
+
+		cur_res := graph_traverse(nei, vis, graph, total+1, append(steps, total))
+
+		if len(res) < len(cur_res) {
+			res = cur_res
+		}
 	}
 
-	return minSteps
+	return res
 }
 
 func node_connected_neighbrs(node Node, grid Grid) Nodes {
@@ -94,7 +96,7 @@ func node_connected_neighbrs(node Node, grid Grid) Nodes {
 			neibrs = append(neibrs, Node{row: nr, col: nc + 1, pipe: grid[nr][nc+1]})
 		}
 	case NORTH_EAST:
-		if nr-1 > 0 && grid[nr-1][nc] != "." {
+		if nr-1 >= 0 && grid[nr-1][nc] != "." {
 			neibrs = append(neibrs, Node{row: nr - 1, col: nc, pipe: grid[nr-1][nc]})
 		}
 
@@ -102,7 +104,7 @@ func node_connected_neighbrs(node Node, grid Grid) Nodes {
 			neibrs = append(neibrs, Node{row: nr, col: nc + 1, pipe: grid[nr][nc+1]})
 		}
 	case NORTH_WEST:
-		if nr-1 > 0 && grid[nr-1][nc] != "." {
+		if nr-1 >= 0 && grid[nr-1][nc] != "." {
 			neibrs = append(neibrs, Node{row: nr - 1, col: nc, pipe: grid[nr-1][nc]})
 		}
 		if nc-1 >= 0 && grid[nr][nc-1] != "." {
@@ -159,10 +161,29 @@ func part1(input string) int {
 			graph[node] = node_connected_neighbrs(node, grid)
 		}
 	}
+	start_node_neighbrs := Nodes{}
 
-	for node := range graph {
-		res := graph_traverse(node, map[Node]bool{}, graph, 0, 0)
-		output = max(output, res)
+	for node, neibrs := range graph {
+		for _, n := range neibrs {
+			if n.pipe == "S" {
+				start_node_neighbrs = append(start_node_neighbrs, node)
+			}
+		}
+	}
+
+	graph[start_node] = start_node_neighbrs
+
+	cicle := graph_traverse(start_node_neighbrs[0], map[Node]bool{}, graph, 1, []int{})
+	rev_cicle := []int{}
+
+	for i := 0; i < len(cicle); i++ {
+		rev_cicle = append(rev_cicle, cicle[len(cicle)-1-i])
+	}
+
+	for i := 0; i < len(cicle); i++ {
+		if cicle[i] == rev_cicle[i] {
+			return cicle[i]
+		}
 	}
 
 	return output
