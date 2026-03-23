@@ -1,28 +1,34 @@
+#include <stddef.h>
 #include <stdio.h>
 #include <string.h>
 
 int decode_instructions(const char *str,int *floor){
-    int count = 1;
+    size_t count = 1;
+    int local_floor = *floor;
+
     while(*str != '\0'){
         switch (*str) {
             case '(':
-                *floor = *floor + 1;
+                local_floor++;
                 break;
             case ')':
-                *floor = *floor - 1;
+                local_floor--;
                 break;
             default:
                 break;
         }
 
 
-        if(*floor < 0){
+        if(local_floor < 0){
             return count;
         }
 
         str++;
         count++;
     }
+
+
+    *floor = local_floor;
 
     return 0;
 };
@@ -32,20 +38,16 @@ int decode_instructions(const char *str,int *floor){
 int main(){
     FILE *file = fopen("real_input.txt","r");
 
-
     if(file == NULL){
         printf("ERROR: Could not open the file. Does it exist?\n");
         return 1;
     }
 
-
     char buffer[256];
-
 
     int floor = 0;
     int position = 0;
     int result = 0;
-
 
     while(fgets(buffer,sizeof(buffer),file) != NULL && position == 0){
        position = decode_instructions(buffer,&floor);
@@ -57,6 +59,7 @@ int main(){
 
     printf("The position is: %d\n",result+position);
 
+    fclose(file);
+
     return 0;
 };
-
