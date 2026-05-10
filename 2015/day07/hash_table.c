@@ -22,7 +22,7 @@ ht_hash_table* ht_new_sized(const int base_size){
     ht_hash_table* ht = malloc(sizeof(ht_hash_table));
 
     ht->base_size = base_size;
-    ht->size = next_prime(ht->size);
+    ht->size = next_prime(base_size);
     ht->count = 0;
     ht->items = calloc((size_t)ht->size, sizeof(ht_item*));
 
@@ -44,7 +44,7 @@ void ht_delete_hash_table(ht_hash_table* ht){
     for(size_t i = 0; i < ht->size; i++){
         ht_item* item = ht->items[i];
 
-        if(item != NULL) {
+        if(item != NULL && item != &HT_DELETED_ITEM) {
             ht_delete_item(item);
         }
     }
@@ -67,7 +67,7 @@ static int ht_hash(const char* s, const int a, const int m){
 
 static int ht_get_hash(const char* s, const int num_buckets, const int attemps){
     const int hash_a = ht_hash(s, HT_PRIME_1, num_buckets);
-    const int hash_b = ht_hash(s, HT_PRIME_2, num_buckets);
+    const int hash_b = ht_hash(s, HT_PRIME_2, num_buckets - 1);
 
     return (hash_a + (attemps * (hash_b + 1))) % num_buckets;
 }
@@ -97,16 +97,14 @@ void ht_insert(ht_hash_table* ht, const char* key, const char* value){
     ht_item* cur_item = ht->items[index];
     int attemps = 1;
 
-    bool dup = strcmp(cur_item->key, key) == 0;
-
-    while(cur_item != NULL && cur_item != &HT_DELETED_ITEM && !dup){
+    while(cur_item != NULL && cur_item != &HT_DELETED_ITEM){
+        if(strcmp(cur_item->key, key) == 0){
+            ht_delete_item(cur_item);
+            ht->items[index] = item;
+            return;
+        }
         index = ht_get_hash(item->key, ht->size, attemps++);
         cur_item = ht->items[index];
-        dup = strcmp(cur_item->key, key) != 0;
-    }
-
-    if(dup){
-        ht_delete_item(cur_item);
     }
 
     ht->items[index] = item;
@@ -137,7 +135,7 @@ void ht_delete(ht_hash_table* ht, const char* key){
     ht_item* item = ht->items[index];
     int attemps = 1;
 
-    const int load = ht->size * 100 / ht->size;
+    const int load = ht->count * 100 / ht->size;
 
     if(load < 10) {
         ht_resize_down(ht);
