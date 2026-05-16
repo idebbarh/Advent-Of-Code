@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "hash_table.c"
+#include "../utils/hash_table.c"
 
 void int_to_str(int number, char *buffer, int size) {
     snprintf(buffer, size, "%d", number);

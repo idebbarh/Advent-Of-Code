@@ -1,5 +1,5 @@
-#include <math.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "hash_table.h"
@@ -53,13 +53,12 @@ void ht_delete_hash_table(ht_hash_table* ht){
     free(ht);
 } 
 
-static int ht_hash(const char* s, const int a, const int m){
-    long hash = 0;
+static int ht_hash(const char* s, const int a, const int m) {
+    unsigned long hash = 0;
     const int len_s = strlen(s);
 
-    for(size_t i = 0; i < len_s; i++){
-        hash += (long)pow(a, len_s - (i+1)) * s[i];
-        hash = hash % m;
+    for (size_t i = 0; i < len_s; i++) {
+        hash = (hash * a + (unsigned char)s[i]) % m;
     }
 
     return (int)hash;
@@ -131,15 +130,16 @@ char* ht_search(ht_hash_table* ht, const char* key){
 }
 
 void ht_delete(ht_hash_table* ht, const char* key){
-    int index = ht_get_hash(key, ht->size, 0);
-    ht_item* item = ht->items[index];
-    int attemps = 1;
-
     const int load = ht->count * 100 / ht->size;
 
     if(load < 10) {
         ht_resize_down(ht);
     }
+
+    int index = ht_get_hash(key, ht->size, 0);
+    ht_item* item = ht->items[index];
+    int attemps = 1;
+
 
     while(item != NULL){
         if (item != &HT_DELETED_ITEM) {
@@ -187,6 +187,27 @@ static void ht_resize(ht_hash_table* ht, const int base_size) {
     new_ht->items = tmp_items;
 
     ht_delete_hash_table(new_ht);
+}
+
+
+void ht_print(const ht_hash_table* ht, const char* name) {
+    if (ht == NULL) {
+        printf("%s is NULL\n", name);
+        return;
+    }
+
+    printf("\n--- %s ---\n", name);
+    printf("size: %d | count: %d | base_size: %d\n", ht->size, ht->count, ht->base_size);
+
+    for (int i = 0; i < ht->size; i++) {
+        ht_item* item = ht->items[i];
+
+        if (item != NULL && item->key != NULL && item->value != NULL) {
+            printf("[%d] key: %s | value: %s\n", i, item->key, item->value);
+        }
+    }
+
+    printf("--- end %s ---\n\n", name);
 }
 
 
